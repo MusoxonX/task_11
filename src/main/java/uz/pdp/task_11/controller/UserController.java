@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.task_11.entity.User;
 import uz.pdp.task_11.payload.Result;
+import uz.pdp.task_11.payload.UserDto;
 import uz.pdp.task_11.service.UserService;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class UserController {
     UserService userService;
 
     @PostMapping()
-    public Result addUser(@RequestBody User userDto){
+    public Result addUser(@RequestBody UserDto userDto){
         Result result = userService.addUser(userDto);
         return result;
     }
@@ -39,7 +40,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public Result editUser(@PathVariable Integer id,@RequestBody User userDto){
+    public Result editUser(@PathVariable Integer id,@RequestBody UserDto userDto){
         Result result = userService.editUser(id, userDto);
         return result;
     }

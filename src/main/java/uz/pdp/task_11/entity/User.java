@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -23,7 +24,10 @@ public class User {
     @Column(unique = true, nullable = false)
     private String phoneNumber;
 
-    private Integer code;
+    private String code;
+
+    @ManyToMany
+    private List<Warehouse> warehouse;
 
     private boolean active = true;
 }

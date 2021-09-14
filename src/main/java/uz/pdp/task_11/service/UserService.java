@@ -5,20 +5,32 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import uz.pdp.task_11.entity.User;
+import uz.pdp.task_11.entity.Warehouse;
 import uz.pdp.task_11.payload.Result;
+import uz.pdp.task_11.payload.UserDto;
 import uz.pdp.task_11.repository.UserRepository;
+import uz.pdp.task_11.repository.WarehouseRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
     @Autowired
     UserRepository userRepository;
 
-    public Result addUser(@RequestBody User userDto){
+    @Autowired
+    WarehouseRepository warehouseRepository;
+
+    public Result addUser(@RequestBody UserDto userDto){
         User user = new User();
         user.setFirstName(userDto.getFirstName());
+        List<Warehouse> warehouses = warehouseRepository.findAllById(userDto.getWarehousesId());
+        if (warehouses.isEmpty()){
+            return new Result("warehouses not found",false);
+        }
+
         if (userDto.getFirstName().isEmpty()){
             return new Result("first name must be",false);
         }
@@ -28,7 +40,8 @@ public class UserService {
             return new Result("phone Number alredy excist",true);
         }
         user.setPhoneNumber(userDto.getPhoneNumber());
-        user.setCode(userDto.getCode());
+        user.setWarehouse(warehouses);
+        user.setCode(UUID.randomUUID().toString());
         userRepository.save(user);
         return new Result("user added",true);
     }
@@ -51,7 +64,7 @@ public class UserService {
         return new Result("user not found",false);
     }
 
-    public Result editUser(@PathVariable Integer id,@RequestBody User userDto){
+    public Result editUser(@PathVariable Integer id,@RequestBody UserDto userDto){
         Optional<User> optionalUser = userRepository.findById(id);
         if (!optionalUser.isPresent()){
             return new Result("user not found",false);
@@ -61,18 +74,21 @@ public class UserService {
         if (userDto.getFirstName().isEmpty()){
             return new Result("first name must be",false);
         }
+        List<Warehouse> warehouses = warehouseRepository.findAllById(userDto.getWarehousesId());
+        if (warehouses.isEmpty()){
+            return new Result("warehouses not found",false);
+        }
         user.setLastName(userDto.getLastName());
         boolean exists = userRepository.existsByPhoneNumber(userDto.getPhoneNumber());
         if (exists){
             return new Result("phone Number alredy excist",true);
         }
         user.setPhoneNumber(userDto.getPhoneNumber());
-        user.setCode(userDto.getCode());
+        user.setCode(UUID.randomUUID().toString());
+        user.setWarehouse(warehouses);
         userRepository.save(user);
         return new Result("user adited",true);
-
     }
-
 }
 
 
